@@ -58,6 +58,7 @@ window.onload = init;
 var puzzleCells;
 var cellBackground;
 
+
 function init() {
       //insert the title for the first puzzle
       document.getElementById("puzzleTitle").innerHTML = "Puzzle 1";
@@ -75,7 +76,16 @@ function init() {
 }
 
 //add event listener for mouseup
-document.addEventListener("mouseup", endBackround);
+document.addEventListener("mouseup", endBackground);
+//create event listener to show event button
+document.getElementById("solve").addEventListener("click", function () {
+      //remove inline background clor style from each cell
+      for (var i = 0; i < puzzleCells.length; i++) {
+            puzzleCells[i].style.backgroundColor = "";
+      }
+});
+
+
 
 function swapPuzzle(e) {
       //Retrieve id of clicked button
@@ -112,16 +122,53 @@ function setupPuzzle() {
             puzzleCells[i].style.backgroundColor = "rgb(233, 207, 29)";
             //set cell background color in response to the mouse down event
             puzzleCells[i].onmousedown = setBackground;
+            //use pencil image as cursor
+            puzzleCells[i].style.cursor = "url(jpf_pencil.png), pointer"
       }
+      //create object collection of filled and empty cells
+      var filled = document.querySelectorAll("tableHanjieGrid.td.filled");
+      var empty = document.querySelectorAll("tableHanjieGrid.td.empty");
+
+      //event listener to highlight incorrect cells
+      document.getElementById("peek").addEventListener("click", function () {
+            //display incorrect white cells in pink
+            for (var i = 0; i < filled.length; i++) {
+                  if (filled[i].style.backgroundColor === "rgb(255,255,255)") {
+                        filled[i].style.backgroundColor = "rgb(255,211,211)";
+                  }
+            }
+            for (var i = 0; i < empty.length; i++) {
+                  if (empty[i].style.backgroundColor === "rgb(101,101,101)") {
+
+                  }
+            }
+      });
 }
 
+
+
 function setBackground(e) {
-      cellBackground = "rgb(101, 101, 101)";
+      var cursorType;
+      // cellBackground = "rgb(101, 101, 101)";
+      //Backgoround is based on keyboard event
+      if (e.shiftKey) {
+            cellBackground = "rgb(223, 207, 23)";
+            cursorType = "url(jpf_eraser.png), cell";
+      } else if (e.altKey) {
+            cellBackground = "rgb(255, 255, 255)";
+            cursorType = "url(jpf_cross.png), crosshair";
+      } else {
+            cellBackground = "rgb(101, 101, 101)";
+            cursorType = "url(jpf_pencil.png), pointer";
+      }
       e.target.style.backgroundColor = cellBackground;
       //Create event listener for every puzzle cell
       for (var i = 0; i < puzzleCells.length; i++) {
             puzzleCells[i].addEventListener("mouseenter", extendBackground);
+            puzzleCells[i].style.cursor = cursorType;
       }
+      //prevent default select text 
+      e.preventDefault();
 }
 
 function extendBackground(e) {
@@ -132,6 +179,7 @@ function endBackground() {
       //remove event listener for every puzzle cell
       for (var i = 0; i < puzzleCells.length; i++) {
             puzzleCells[i].removeEventListener("mouseenter", extendBackground);
+
       }
 }
 
